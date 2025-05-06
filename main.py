@@ -19,10 +19,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Update paths for containerized environment
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INDEX_PATH = os.path.join(BASE_DIR, "ualr_chatbot_backend","faiss_index.index")
-METADATA_PATH = os.path.join(BASE_DIR, "ualr_chatbot_backend", "doc_metadata.pkl")
+# Set paths for containerized environment
+BASE_DIR = "/app"
+INDEX_PATH = os.path.join(BASE_DIR, "faiss_index.index")
+METADATA_PATH = os.path.join(BASE_DIR, "doc_metadata.pkl")
 
 logger.info(f"BASE_DIR: {BASE_DIR}")
 logger.info(f"INDEX_PATH: {INDEX_PATH}")
