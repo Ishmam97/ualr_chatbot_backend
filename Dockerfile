@@ -3,9 +3,8 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.8.3 \
-    PORT=8000
-    
+    POETRY_VERSION=1.8.3
+
 WORKDIR /app
 
 # Install system dependencies
@@ -18,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Poetry
 RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
 
-# Copy only dependency files first
+# Copy dependency files
 COPY pyproject.toml poetry.lock* /app/
 
 # Install dependencies
@@ -33,12 +32,14 @@ COPY faiss_index.index doc_metadata.pkl /app/
 RUN useradd -m appuser
 USER appuser
 
-# Expose port
-EXPOSE 8000
+# Expose port dynamically based on PORT environment variable
+ARG PORT=8000
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# Run application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# Run application with dynamic port
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 2"]
