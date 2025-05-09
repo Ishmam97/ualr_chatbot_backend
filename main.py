@@ -1,11 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field 
-from backend.ualr_chatbot.retriever import Retriever
-from backend.ualr_chatbot.llm import call_gemini
+from pydantic import BaseModel
+from retriever import Retriever
+from llm import call_gemini
 import os
 import logging
-import json 
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
