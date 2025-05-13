@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 # Update paths for containerized environment
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = "/app"
 INDEX_PATH = os.path.join(BASE_DIR, "faiss_index.faiss")
 METADATA_PATH = os.path.join(BASE_DIR, "doc_metadata.pkl")
 
