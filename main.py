@@ -7,8 +7,8 @@ from datetime import datetime
 from typing import Optional, List, Dict, Any
 import json
 
-from backend.ualr_chatbot.retriever import Retriever
-from backend.ualr_chatbot.llm import call_gemini
+from retriever import Retriever
+from llm import call_gemini
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
