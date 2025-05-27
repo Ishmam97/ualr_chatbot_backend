@@ -5,7 +5,8 @@ import logging
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-import json
+import re
+from langsmith import Client
 
 from retriever import Retriever
 from llm import call_gemini
@@ -37,7 +38,46 @@ logger.info(f"BASE_DIR: {BASE_DIR}")
 logger.info(f"INDEX_PATH: {INDEX_PATH}")
 logger.info(f"METADATA_PATH: {METADATA_PATH}")
 
+LANGSMITH_API_KEY = os.environ.get("LANGSMITH_API_KEY")
+if not LANGSMITH_API_KEY:
+    logger.warning("LangSmith API key not found. Feedback submission to LangSmith will be disabled.")
+LANGSMITH_PROJECT = os.environ.get("LANGSMITH_PROJECT", "ualr-chatbot")
+LANGSMITH_ENDPOINT = os.environ.get("LANGSMITH_ENDPOINT", "https://api.smith.langchain.com")
 
+langsmith_client = None
+if LANGSMITH_API_KEY:
+    try:
+        langsmith_client = Client(
+            api_key=LANGSMITH_API_KEY,
+            api_url=LANGSMITH_ENDPOINT
+        )
+        logger.info(f"LangSmith client initialized with project: {LANGSMITH_PROJECT}")
+    except Exception as e:
+        logger.error(f"Failed to initialize LangSmith client: {e}")
+
+
+def extract_uuid_from_run_id(run_id: str) -> str:
+    """
+    Extract UUID from LangChain run_id format.
+    Examples:
+    - "run--9f67587f-11c2-4a3f-aef1-1b57a8d5a31d-0" -> "9f67587f-11c2-4a3f-aef1-1b57a8d5a31d"
+    - "9f67587f-11c2-4a3f-aef1-1b57a8d5a31d" -> "9f67587f-11c2-4a3f-aef1-1b57a8d5a31d"
+    """
+    if not run_id:
+        return run_id
+    
+    # Try to extract UUID pattern from the run_id
+    uuid_pattern = r'([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})'
+    match = re.search(uuid_pattern, run_id, re.IGNORECASE)
+    
+    if match:
+        extracted_uuid = match.group(1)
+        logger.info(f"Extracted UUID '{extracted_uuid}' from run_id '{run_id}'")
+        return extracted_uuid
+    
+    # If no UUID pattern found, return original (might already be a clean UUID)
+    logger.warning(f"Could not extract UUID from run_id: {run_id}")
+    return run_id
 
 class FeedbackItem(BaseModel):
     model_config = ConfigDict(
@@ -74,6 +114,7 @@ add ths to your response if you do not know the answer:
 Contact UALR's main office at (501) 569-3000 or email info@ualr.edu for further assistance."
 """
 
+
 @app.post("/feedback")
 async def store_feedback(feedback: FeedbackItem):
     # More verbose logging for this specific function
@@ -93,6 +134,30 @@ async def store_feedback(feedback: FeedbackItem):
         logger.info(f"correct_answer: {feedback.correct_answer}")
     
     logger.info(f"Target feedback file for this request: {FEEDBACK_FILE}")
+
+    if feedback.run_id and langsmith_client:
+        try:
+            # Extract clean UUID from run_id
+            clean_run_id = extract_uuid_from_run_id(feedback.run_id)
+            
+            score = 1.0 if feedback.feedback_type == "thumbs_up" else 0.0
+            comment = feedback.thumbs_up_reason if feedback.feedback_type == "thumbs_up" else feedback.thumbs_down_reason
+            if feedback.feedback_type == "correction_suggestion":
+                comment = f"Correction: Q: {feedback.corrected_question}, A: {feedback.correct_answer}"
+                score = 0.0
+
+            logger.info(f"Submitting feedback to LangSmith with run_id: {clean_run_id}")
+            langsmith_client.create_feedback(
+                run_id=clean_run_id,
+                key="user_rating",
+                score=score,
+                comment=comment or "No comment",
+                # Optional: specify project if needed
+                # project_id=LANGSMITH_PROJECT
+            )
+            logger.info(f"Feedback submitted to LangSmith for run_id {clean_run_id}")
+        except Exception as e:
+            logger.error(f"Failed to submit feedback to LangSmith: {e}")
 
     try:
         logger.info(f"[{request_timestamp_str}] Attempting to open file '{FEEDBACK_FILE}' for append...")
@@ -145,8 +210,11 @@ async def handle_query(request: QueryRequest):
             model=request.model,
             system_prompt=SYSTEM_PROMPT
         )
+
+        # Log the response ID for debugging
+        logger.info(f"LangChain response ID: {response.id}")
         
-        return {"response": response, "retrieved_docs": docs}
+        return {"response": response, "retrieved_docs": docs, "run_id": response.id}
     
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}")
