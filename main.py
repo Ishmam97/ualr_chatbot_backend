@@ -29,20 +29,20 @@ BASE_DIR = "/app"
 INDEX_PATH = os.path.join(BASE_DIR, "faiss_index.faiss")
 METADATA_PATH = os.path.join(BASE_DIR, "doc_metadata.pkl")
 
-APP_DIR = os.path.dirname(os.path.abspath(__file__))
-FEEDBACK_FILE = os.path.join(APP_DIR, "feedback_log.jsonl")
-# Add this log line to see the exact path being used when the app starts
-logger.info(f"Attempting to use feedback log file at: {FEEDBACK_FILE}")
-
-logger.info(f"BASE_DIR: {BASE_DIR}")
-logger.info(f"INDEX_PATH: {INDEX_PATH}")
-logger.info(f"METADATA_PATH: {METADATA_PATH}")
-
 LANGSMITH_API_KEY = os.environ.get("LANGSMITH_API_KEY")
 if not LANGSMITH_API_KEY:
     logger.warning("LangSmith API key not found. Feedback submission to LangSmith will be disabled.")
 LANGSMITH_PROJECT = os.environ.get("LANGSMITH_PROJECT", "ualr-chatbot")
 LANGSMITH_ENDPOINT = os.environ.get("LANGSMITH_ENDPOINT", "https://api.smith.langchain.com")
+
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+FEEDBACK_FILE = os.path.join(APP_DIR, "feedback_log.jsonl")
+
+# Add this log line to see the exact path being used when the app starts
+logger.info(f"Attempting to use feedback log file at: {FEEDBACK_FILE}")
+logger.info(f"BASE_DIR: {BASE_DIR}")
+logger.info(f"INDEX_PATH: {INDEX_PATH}")
+logger.info(f"METADATA_PATH: {METADATA_PATH}")
 
 langsmith_client = None
 if LANGSMITH_API_KEY:
@@ -98,6 +98,7 @@ class FeedbackItem(BaseModel):
     model_used: Optional[str] = None
     retrieved_docs: Optional[List[Dict[str, Any]]] = None
     source_message_id: Optional[str] = None
+    run_id: Optional[str] = None 
 
 class QueryRequest(BaseModel):
     query: str
