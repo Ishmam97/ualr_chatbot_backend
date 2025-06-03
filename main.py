@@ -26,7 +26,7 @@ app.add_middleware(
 
 # Update paths for containerized environment
 BASE_DIR = "/app"
-INDEX_PATH = os.path.join(BASE_DIR, "faiss_index.faiss")
+INDEX_PATH = os.path.join(BASE_DIR, "faiss_index.index")
 METADATA_PATH = os.path.join(BASE_DIR, "doc_metadata.pkl")
 
 LANGSMITH_API_KEY = os.environ.get("LANGSMITH_API_KEY")
