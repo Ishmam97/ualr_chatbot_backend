@@ -26,7 +26,7 @@ RUN poetry config virtualenvs.create false && \
 
 # Copy application code and data files
 COPY main.py retriever.py llm.py /app/
-COPY faiss_index.faiss doc_metadata.pkl /app/
+COPY faiss_index.index doc_metadata.pkl /app/
 
 # Create non-root user
 RUN useradd -m appuser
