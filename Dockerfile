@@ -7,4 +7,5 @@ RUN pip install poetry && poetry config virtualenvs.create false && poetry insta
 
 COPY . /app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT}", "--workers", "1"]
+
