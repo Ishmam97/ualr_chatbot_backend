@@ -11,7 +11,7 @@ RUN pip install poetry && \
     poetry install --no-interaction --no-ansi --no-root
 
 # Ensure FAISS index and metadata are included
-COPY faiss_index.index doc_metadata.pkl ./
+COPY faiss_index.faiss doc_metadata.pkl ./
 
 # Copy the rest of the application code
 COPY . /app
