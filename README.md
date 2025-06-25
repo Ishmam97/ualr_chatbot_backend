@@ -94,7 +94,12 @@ curl http://localhost:8000/health
 ---
 
 ## 🧪 Testing
+### running locally
 
+browse to -> https://localhost:8000/docs
+use the ui to test inputs
+
+### code tests (to be implemented)
 ```bash
 # Install dev deps locally (optional)
 poetry install --with dev
