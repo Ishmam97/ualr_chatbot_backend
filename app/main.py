@@ -8,8 +8,8 @@ from typing import Optional, List, Dict, Any
 import re
 from langsmith import Client
 
-from retriever import Retriever
-from llm import call_gemini
+from app.retriever import Retriever
+from app.llm import call_gemini
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: .
+    environment:
+      - PORT               # ← now picked up from .env
+    ports:
+      - "8000:${PORT}"
+    volumes:
+      - ./:/app
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "${PORT}"
+      - --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT}/health"]
+      interval: 30s
+      timeout: 3s
