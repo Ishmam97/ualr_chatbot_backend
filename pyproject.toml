@@ -3,6 +3,10 @@ name = "ualr-chatbot"
 version = "0.1.0"
 description = ""
 authors = ["Ishmam <ishmam.a.solaiman@gmail.com>"]
+packages = [
+  { include = "app" }
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -12,10 +16,12 @@ fastapi = "^0.115.12"
 uvicorn = "^0.34.2"
 google-genai = "^1.14.0"
 langchain-google-genai = "^2.1.4"
+pandas = "^2.2.2"
 
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
+notebook = "^7.4.3"
 
 [build-system]
 requires = ["poetry-core"]
