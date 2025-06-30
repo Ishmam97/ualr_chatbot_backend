@@ -14,6 +14,7 @@ A FastAPI service powering the UALR Chatbot, retrieving documents via FAISS + Go
 │   ├── retriever.py       # FAISS-based document retriever&#x20;
 │   └── llm.py             # LLM invocation helpers (Gemini/Ollama)&#x20;
 ├── faiss\_index.index      # Precomputed FAISS index (binary)
+├── tests\test.py     # Testing
 ├── doc\_metadata.pkl       # Pickled metadata for indexed docs
 ├── feedback\_log.jsonl     # Local store for user feedback
 ├── Dockerfile             # Production image build recipe&#x20;
