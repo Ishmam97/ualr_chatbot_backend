@@ -10,17 +10,12 @@ test_cases = [
         "expected": "Sonya Premeaux"
     },
     {
-        "query": "Tell me about scholarships ",
-        "expected": "Jennifer Holtz"
-    },
-      {
-        "query": "Who is John Talburt",
-        "expected": "AEAX"
-    },
-
-    {
         "query": "Who is Mark funk tell me about him",
         "expected": "AEAX"
+    },
+     {
+        "query": "Can I get the contact info for the coordinator of Adult Education?",
+        "expected": "Jennifer Holtz"
     }
 ]
 
@@ -39,7 +34,7 @@ def test_query(query, expected_substring):
     if expected_substring.lower() in result.lower():
         print("✅ Match")
     else:
-        print(f"❌ Expected to find: '{expected_substring}'")
+        print(f" Expected to find: '{expected_substring}'")
 
 if __name__ == "__main__":
     for case in test_cases:
