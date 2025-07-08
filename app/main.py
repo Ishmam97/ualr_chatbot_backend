@@ -104,7 +104,7 @@ class QueryRequest(BaseModel):
     query: str
     api_key: str
     k: int = 3
-    model: str = "gemini-1.5-flash-latest"
+    model: str = "gemini-2.0-flash-lite"
 
 SYSTEM_PROMPT = """
 You are a helpful chatbot for the University of Arkansas at Little Rock (UALR). 
