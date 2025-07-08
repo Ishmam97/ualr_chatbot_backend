@@ -7,6 +7,8 @@ services:
       - "8000:${PORT}"
     volumes:
       - ./:/app
+      - ./data:/app/data
+      - ./output:/app/output
     command:
       - uvicorn
       - app.main:app
