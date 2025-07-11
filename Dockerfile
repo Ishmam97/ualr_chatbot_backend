@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Copy dependency definitions first for caching
 COPY pyproject.toml poetry.lock ./
+COPY service_account.json ./service_account.json
 
 # Install Poetry and project dependencies
 RUN pip install poetry && \
