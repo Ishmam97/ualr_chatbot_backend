@@ -1,8 +1,10 @@
 services:
   backend:
     build: .
+    env_file: .env 
     environment:
       - PORT               # ← now picked up from .env
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/service_account.json
     ports:
       - "8000:${PORT}"
     volumes:
